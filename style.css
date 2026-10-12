@@ -1,34 +1,38 @@
 :root {
-    --bg-core: #020306;
-    --primary-glow: #38bdf8;
-    --secondary-glow: #818cf8;
-    --accent-warm: #fde68a;
-    --text-light: #f1f5f9;
-    --text-dim: #64748b;
-    --border-line: rgba(255, 255, 255, 0.09);
+    --bg-void: #030408;
+    --primary-color: #38bdf8;
+    --secondary-color: #818cf8;
+    --accent-color: #fde68a;
+    --yt-red: #ff0033;
+    --gh-purple: #a855f7;
+    --text-main: #f1f5f9;
+    --text-muted: #64748b;
+    --border-subtle: rgba(255, 255, 255, 0.08);
 }
 
-/* ระบบสลับสี DaVinci LUT ผ่าน Data Attribute */
-body[data-lut="cyan"] {
-    --primary-glow: #38bdf8;
-    --secondary-glow: #818cf8;
-    --accent-warm: #fde68a;
+/* 4 โทนสีปรัชญา */
+body[data-philosophy="existentialism"] {
+    --primary-color: #38bdf8;
+    --secondary-color: #818cf8;
+    --accent-color: #fde68a;
 }
-body[data-lut="amber"] {
-    --primary-glow: #f59e0b;
-    --secondary-glow: #ea580c;
-    --accent-warm: #fef3c7;
+
+body[data-philosophy="nihilism"] {
+    --primary-color: #94a3b8;
+    --secondary-color: #475569;
+    --accent-color: #cbd5e1;
 }
-body[data-lut="crimson"] {
-    --primary-glow: #f43f5e;
-    --secondary-glow: #9333ea;
-    --accent-warm: #fecdd3;
+
+body[data-philosophy="determinism"] {
+    --primary-color: #f59e0b;
+    --secondary-color: #d97706;
+    --accent-color: #fef3c7;
 }
-body[data-lut="mono"] {
-    --primary-glow: #e2e8f0;
-    --secondary-glow: #94a3b8;
-    --accent-warm: #ffffff;
-    filter: contrast(1.15) grayscale(0.85);
+
+body[data-philosophy="absurdism"] {
+    --primary-color: #f43f5e;
+    --secondary-color: #a855f7;
+    --accent-color: #fecdd3;
 }
 
 * {
@@ -36,92 +40,84 @@ body[data-lut="mono"] {
     padding: 0;
     box-sizing: border-box;
     user-select: none;
-    cursor: none; /* ซ่อนเมาส์ปกติเพื่อใช้ Tactical Reticle */
+    cursor: none;
 }
 
 body {
-    background-color: var(--bg-core);
-    color: var(--text-light);
+    background-color: var(--bg-void);
+    color: var(--text-main);
     font-family: 'Prompt', sans-serif;
     height: 100vh;
     overflow: hidden;
     display: flex;
     justify-content: center;
     align-items: center;
-    perspective: 1200px;
-    transition: filter 0.6s ease;
 }
 
 .mono-text, .mono-tag, .mono-sub {
     font-family: 'Fira Code', monospace;
 }
 
-/* Custom Tactical Cursor */
-#cursor-core {
+/* เป้าเล็งเมาส์ */
+#cursor-dot {
     position: fixed;
+    top: 0;
+    left: 0;
     width: 6px;
     height: 6px;
-    background: var(--accent-warm);
+    background: var(--accent-color);
     border-radius: 50%;
     pointer-events: none;
     z-index: 9999;
-    transform: translate(-50%, -50%);
-    box-shadow: 0 0 10px var(--primary-glow);
+    will-change: transform;
 }
 
 #cursor-ring {
     position: fixed;
-    width: 38px;
-    height: 38px;
-    border: 1px solid var(--primary-glow);
+    top: 0;
+    left: 0;
+    width: 28px;
+    height: 28px;
+    border: 1px dashed var(--primary-color);
     border-radius: 50%;
     pointer-events: none;
     z-index: 9998;
-    transform: translate(-50%, -50%);
-    transition: width 0.2s, height 0.2s, border-color 0.2s, background 0.2s;
+    transition: border-color 0.25s, background 0.25s;
+    will-change: transform, width, height;
     display: flex;
-    align-items: flex-end;
     justify-content: center;
+    align-items: flex-end;
 }
 
-#cursor-ring.active-well {
-    width: 75px;
-    height: 75px;
-    border-color: var(--accent-warm);
-    background: radial-gradient(circle, rgba(255,255,255,0.12) 0%, transparent 70%);
+#cursor-ring.pulling {
+    border-style: solid;
+    border-width: 1.5px;
+    border-color: var(--accent-color);
+    background: radial-gradient(circle, rgba(255,255,255,0.08) 0%, transparent 72%);
 }
 
-#cursor-vel {
+#rpm-gauge {
     font-family: 'Fira Code', monospace;
-    font-size: 0.5rem;
-    color: var(--primary-glow);
-    transform: translateY(14px);
-    opacity: 0.75;
+    font-size: 0.55rem;
+    color: var(--accent-color);
+    transform: translateY(18px);
+    white-space: nowrap;
 }
 
-/* Post-Processing Overlays */
-#singularity-canvas {
+/* พื้นหลัง Canvas */
+#cosmos-canvas {
     position: fixed;
     inset: 0;
     z-index: 1;
+    background-color: var(--bg-void);
 }
 
 .vignette {
     position: fixed;
     inset: 0;
-    box-shadow: inset 0 0 200px rgba(0, 0, 0, 0.95);
+    box-shadow: inset 0 0 180px rgba(0, 0, 0, 0.92);
     pointer-events: none;
     z-index: 2;
-}
-
-.scanlines {
-    position: fixed;
-    inset: 0;
-    background: linear-gradient(to bottom, rgba(255,255,255,0), rgba(255,255,255,0) 50%, rgba(0,0,0,0.2) 50%, rgba(0,0,0,0.2));
-    background-size: 100% 4px;
-    pointer-events: none;
-    z-index: 3;
-    opacity: 0.35;
 }
 
 /* ขอบดำโรงภาพยนตร์ (Letterbox HUD) */
@@ -130,123 +126,152 @@ body {
     left: 0;
     width: 100%;
     height: 8vh;
-    background: rgba(1, 2, 4, 0.92);
-    backdrop-filter: blur(8px);
+    background: #010204;
     z-index: 20;
     display: flex;
     justify-content: space-between;
     align-items: center;
     padding: 0 3%;
     font-size: 0.7rem;
-    color: var(--text-dim);
+    color: var(--text-muted);
     letter-spacing: 1px;
 }
 
-.letterbox.top { top: 0; border-bottom: 1px solid var(--border-line); }
-.letterbox.bottom { bottom: 0; border-top: 1px solid var(--border-line); }
+.letterbox.top { top: 0; border-bottom: 1px solid var(--border-subtle); }
+.letterbox.bottom { bottom: 0; border-top: 1px solid var(--border-subtle); }
 
 .hud-group {
     display: flex;
     align-items: center;
-    gap: 12px;
+    gap: 10px;
 }
 
-.hud-group strong { color: var(--text-light); }
+.hud-group strong { color: var(--text-main); }
 .hud-divider { opacity: 0.25; }
 
-.hud-center {
+.hud-center-link {
     font-family: 'Cinzel', serif;
     letter-spacing: 5px;
-    color: var(--text-light);
-    font-size: 0.78rem;
+    color: var(--text-main);
+    font-size: 0.8rem;
+    text-decoration: none;
+    transition: color 0.3s, text-shadow 0.3s;
 }
 
-.wing-icon { color: var(--primary-glow); }
+.hud-center-link:hover {
+    color: var(--accent-color);
+    text-shadow: 0 0 15px var(--primary-color);
+}
+
+.wing-icon { color: var(--primary-color); transition: color 0.4s; }
 
 .rec-dot {
     width: 7px;
     height: 7px;
-    background: var(--primary-glow);
+    background: var(--primary-color);
     border-radius: 50%;
-    box-shadow: 0 0 10px var(--primary-glow);
-    animation: blink 2s infinite;
+    transition: background 0.4s;
 }
 
-@keyframes blink { 50% { opacity: 0.2; } }
-
-/* ปุ่มบน HUD & LUT Switcher */
-.hud-btn, .lut-btn {
+/* ปุ่มบน HUD */
+.hud-btn, .philo-btn {
     background: rgba(255, 255, 255, 0.03);
-    border: 1px solid var(--border-line);
-    color: var(--text-light);
+    border: 1px solid var(--border-subtle);
+    color: var(--text-muted);
     padding: 4px 10px;
     font-family: 'Fira Code', monospace;
     font-size: 0.65rem;
     border-radius: 3px;
+    text-decoration: none;
     transition: all 0.25s;
+    display: inline-flex;
+    align-items: center;
+    gap: 6px;
 }
 
-.hud-btn:hover, .lut-btn:hover, .lut-btn.active {
-    background: var(--primary-glow);
+.hud-btn:hover, .hud-btn.active, .philo-btn:hover, .philo-btn.active {
+    background: var(--primary-color);
     color: #000;
-    border-color: var(--primary-glow);
-    box-shadow: 0 0 15px var(--primary-glow);
-    font-weight: 600;
+    border-color: var(--primary-color);
+    font-weight: 500;
 }
 
-.lut-switcher {
+.gh-hud-link {
+    border-color: rgba(168, 85, 247, 0.45);
+    color: #d8b4fe;
+}
+.gh-hud-link:hover {
+    background: var(--gh-purple);
+    color: #fff;
+    border-color: var(--gh-purple);
+    box-shadow: 0 0 15px rgba(168, 85, 247, 0.5);
+}
+
+.yt-hud-link {
+    border-color: rgba(255, 51, 85, 0.4);
+    color: #fda4af;
+}
+.yt-hud-link:hover {
+    background: #ff0033;
+    color: #fff;
+    border-color: #ff0033;
+    box-shadow: 0 0 15px rgba(255, 0, 51, 0.5);
+}
+
+.philo-switcher {
     display: flex;
     align-items: center;
     gap: 6px;
 }
 
 .hint-badge {
-    color: var(--accent-warm);
-    border: 1px dashed rgba(253, 230, 138, 0.35);
+    color: var(--accent-color);
+    border: 1px solid rgba(255, 255, 255, 0.12);
     padding: 3px 10px;
     border-radius: 3px;
     font-size: 0.65rem;
 }
 
-/* 3D Stage Container */
-.stage-3d {
+/* โครงสร้างเวทีตรงกลาง */
+.cinema-stage {
     position: relative;
     z-index: 10;
     text-align: center;
-    max-width: 980px;
+    max-width: 1000px;
     padding: 20px;
-    transform-style: preserve-3d;
-    transition: transform 0.1s ease-out;
-    pointer-events: none; /* ให้คลิกทะลุไปเล่นกับหลุมดำได้ ยกเว้นตรงปุ่ม */
+    pointer-events: none;
 }
 
-.control-deck, .cyber-cinema-btn {
+.parallax-header {
+    will-change: transform;
+    transition: transform 0.08s ease-out;
+}
+
+.control-deck, .cyber-cinema-btn, .credit-link {
     pointer-events: auto;
 }
 
 .studio-credit {
     font-family: 'Cinzel', serif;
     font-size: 0.78rem;
-    letter-spacing: 10px;
-    color: var(--text-dim);
+    letter-spacing: 9px;
+    color: var(--primary-color);
     margin-bottom: 1.2rem;
-    transform: translateZ(20px);
+    transition: color 0.4s;
 }
 
 .title-block {
     position: relative;
     margin-bottom: 1rem;
-    transform: translateZ(50px);
 }
 
 .cinematic-title {
     font-weight: 300;
-    font-size: clamp(2rem, 4.8vw, 3.9rem);
+    font-size: clamp(2rem, 4.8vw, 3.8rem);
     letter-spacing: 7px;
-    color: #fff;
-    text-shadow: 
-        0 0 25px rgba(255, 255, 255, 0.6),
-        0 0 60px var(--primary-glow);
+    color: #ffffff;
+    text-shadow: 0 0 35px var(--primary-color);
+    transition: text-shadow 0.4s;
 }
 
 .anamorphic-streak {
@@ -254,102 +279,131 @@ body {
     top: 52%;
     left: 50%;
     transform: translate(-50%, -50%);
-    width: 130%;
+    width: 120%;
     height: 2px;
-    background: linear-gradient(90deg, transparent 0%, var(--primary-glow) 30%, #fff 50%, var(--secondary-glow) 70%, transparent 100%);
-    box-shadow: 0 0 30px 3px var(--primary-glow);
-    opacity: 0.75;
+    background: linear-gradient(90deg, transparent 0%, var(--primary-color) 30%, #fff 50%, var(--secondary-color) 70%, transparent 100%);
+    opacity: 0.7;
+    transition: background 0.4s;
 }
 
 .subtitle-block {
-    transform: translateZ(35px);
-    margin-bottom: 2.2rem;
+    margin-bottom: 1.6rem;
 }
 
 .thai-subtitle {
     font-size: clamp(1.1rem, 2.2vw, 1.5rem);
     font-weight: 200;
     letter-spacing: 4px;
-    color: var(--accent-warm);
-    margin-bottom: 0.6rem;
+    color: var(--accent-color);
+    transition: color 0.4s;
 }
 
 .mono-tag {
     font-size: 0.75rem;
-    color: var(--primary-glow);
+    color: var(--primary-color);
     letter-spacing: 2px;
 }
 
 .existential-desc {
-    font-size: 0.85rem;
+    font-size: 0.88rem;
     font-weight: 300;
     color: #94a3b8;
-    line-height: 1.7;
-    max-width: 680px;
-    margin: 0 auto;
+    line-height: 1.75;
+    max-width: 740px;
+    margin: 0 auto 2.2rem;
+    min-height: 3.2em;
 }
 
-/* ปุ่มกดสไตล์ Sci-Fi Cinema */
+/* ปุ่มกดหลัก */
 .control-deck {
     display: flex;
     justify-content: center;
-    gap: 14px;
+    gap: 10px;
     flex-wrap: wrap;
-    margin-bottom: 3rem;
-    transform: translateZ(45px);
+    margin-bottom: 2.8rem;
 }
 
 .cyber-cinema-btn {
-    background: rgba(10, 15, 30, 0.65);
-    border: 1px solid var(--primary-glow);
+    background: rgba(8, 12, 22, 0.85);
+    border: 1px solid var(--primary-color);
     color: #fff;
-    padding: 11px 24px;
+    padding: 10px 20px;
     font-family: 'Prompt', sans-serif;
-    font-size: 0.82rem;
+    font-size: 0.8rem;
     font-weight: 300;
-    letter-spacing: 2px;
+    letter-spacing: 1.5px;
     border-radius: 3px;
-    backdrop-filter: blur(8px);
-    transition: all 0.3s ease;
+    text-decoration: none;
+    display: inline-flex;
+    align-items: center;
+    gap: 8px;
+    transition: all 0.25s ease;
 }
 
 .cyber-cinema-btn:hover {
-    background: var(--primary-glow);
+    background: var(--primary-color);
     color: #000;
     font-weight: 500;
-    box-shadow: 0 0 30px var(--primary-glow);
-    transform: translateY(-3px);
+    transform: translateY(-2px);
+}
+
+.primary-highlight {
+    background: rgba(56, 189, 248, 0.14);
+    border-color: var(--primary-color);
+    box-shadow: 0 0 18px rgba(56, 189, 248, 0.2);
+}
+
+.gh-main-btn {
+    background: linear-gradient(135deg, rgba(168, 85, 247, 0.18), rgba(15, 23, 42, 0.9));
+    border-color: #a855f7;
+    color: #f3e8ff;
+}
+.gh-main-btn:hover {
+    background: #9333ea;
+    border-color: #a855f7;
+    color: #fff;
+    box-shadow: 0 0 25px rgba(168, 85, 247, 0.55);
+}
+
+.yt-main-btn {
+    background: linear-gradient(135deg, rgba(255, 0, 51, 0.16), rgba(15, 23, 42, 0.9));
+    border-color: #ff2a55;
+    color: #fff;
+}
+.yt-main-btn:hover {
+    background: #ff0033;
+    border-color: #ff0033;
+    color: #fff;
+    box-shadow: 0 0 25px rgba(255, 0, 51, 0.55);
 }
 
 .cyber-cinema-btn.secondary {
-    border-color: var(--border-line);
+    border-color: var(--border-subtle);
     color: #cbd5e1;
 }
 .cyber-cinema-btn.secondary:hover {
     background: rgba(255, 255, 255, 0.12);
     color: #fff;
     border-color: #fff;
-    box-shadow: 0 0 20px rgba(255,255,255,0.25);
 }
 
 .cyber-cinema-btn.danger {
-    border-color: rgba(244, 63, 94, 0.5);
+    border-color: rgba(244, 63, 94, 0.45);
     color: #fda4af;
 }
 .cyber-cinema-btn.danger:hover {
     background: #f43f5e;
     color: #fff;
-    box-shadow: 0 0 30px #f43f5e;
+    border-color: #f43f5e;
 }
 
 /* เครดิตท้ายโปสเตอร์ */
 .billing-credits {
     font-family: 'Cinzel', serif;
-    font-size: 0.7rem;
-    color: rgba(255, 255, 255, 0.3);
+    font-size: 0.68rem;
+    color: rgba(255, 255, 255, 0.28);
     letter-spacing: 1.8px;
     line-height: 1.9;
-    transform: translateZ(15px);
 }
 
 .billing-credits strong {
@@ -357,16 +411,197 @@ body {
     margin-right: 10px;
 }
 
+.credit-link {
+    color: var(--accent-color);
+    text-decoration: none;
+    border-bottom: 1px dotted rgba(253, 230, 138, 0.4);
+    transition: color 0.25s;
+}
+.credit-link:hover {
+    color: #fff;
+    border-bottom-color: #fff;
+}
+
 .billing-credits .role {
     font-size: 0.5rem;
 }
 
-/* Modals */
+/* ============================================================================
+   STACKING TOAST NOTIFICATIONS (สูงสุด 4 อัน + อันเก่าดันขึ้นบนและจางลง + หลอดเวลา)
+   ============================================================================ */
+.toast-stack-container {
+    position: fixed;
+    bottom: 9.5vh;
+    right: 2.5%;
+    z-index: 60;
+    display: flex;
+    flex-direction: column; /* อันเก่าอยู่บน อันใหม่ต่อท้ายด้านล่าง */
+    gap: 10px;
+    width: 390px;
+    max-width: 92vw;
+    pointer-events: none;
+}
+
+.archive-toast {
+    position: relative;
+    background: rgba(8, 12, 22, 0.94);
+    border: 1px solid rgba(255, 255, 255, 0.15);
+    border-left: 4px solid var(--primary-color);
+    border-radius: 5px;
+    padding: 12px 14px 15px;
+    display: flex;
+    align-items: center;
+    gap: 12px;
+    box-shadow: 0 12px 32px rgba(0, 0, 0, 0.85);
+    pointer-events: auto;
+    overflow: hidden;
+    transition: opacity 0.35s ease, transform 0.35s cubic-bezier(0.16, 1, 0.3, 1), filter 0.35s ease;
+    animation: toastSlideIn 0.32s cubic-bezier(0.16, 1, 0.3, 1) forwards;
+}
+
+@keyframes toastSlideIn {
+    from { opacity: 0; transform: translateX(40px) scale(0.95); }
+    to { transform: translateX(0) scale(1); }
+}
+
+.archive-toast.closing {
+    opacity: 0 !important;
+    transform: translateY(-12px) scale(0.92) !important;
+}
+
+/* ระดับความจางตามอายุ (ถูกอัปเดตสดๆ จาก JS: 0 = ใหม่สุดล่างสุด, 3 = เก่าสุดบนสุด) */
+.archive-toast[data-age="0"] {
+    opacity: 1;
+    transform: scale(1);
+    z-index: 4;
+}
+.archive-toast[data-age="1"] {
+    opacity: 0.74;
+    transform: scale(0.975);
+    z-index: 3;
+}
+.archive-toast[data-age="2"] {
+    opacity: 0.48;
+    transform: scale(0.95);
+    filter: brightness(0.9);
+    z-index: 2;
+}
+.archive-toast[data-age="3"] {
+    opacity: 0.26;
+    transform: scale(0.925);
+    filter: brightness(0.8);
+    z-index: 1;
+}
+
+/* ถ้าเอาเมาส์ไปชี้ที่อันเก่า ให้กลับมาชัด 100% ชั่วคราวเพื่อให้กดอ่าน/คลิกได้ง่าย */
+.archive-toast:hover {
+    opacity: 1 !important;
+    transform: scale(1) !important;
+    filter: none !important;
+    border-color: var(--accent-color);
+}
+
+.toast-icon-box {
+    width: 36px;
+    height: 36px;
+    border-radius: 4px;
+    background: rgba(255, 255, 255, 0.05);
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    font-size: 1.25rem;
+    flex-shrink: 0;
+}
+
+.toast-body {
+    flex-grow: 1;
+    min-width: 0;
+}
+
+.toast-meta {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    font-family: 'Fira Code', monospace;
+    font-size: 0.58rem;
+    color: var(--accent-color);
+    letter-spacing: 0.8px;
+    margin-bottom: 2px;
+}
+
+.toast-title {
+    font-size: 0.82rem;
+    font-weight: 500;
+    color: #fff;
+    white-space: nowrap;
+    overflow: hidden;
+    text-overflow: ellipsis;
+}
+
+.toast-desc {
+    font-size: 0.72rem;
+    font-weight: 300;
+    color: #94a3b8;
+    white-space: nowrap;
+    overflow: hidden;
+    text-overflow: ellipsis;
+}
+
+.toast-action-btn {
+    background: rgba(255, 255, 255, 0.08);
+    border: 1px solid rgba(255, 255, 255, 0.2);
+    color: #fff;
+    text-decoration: none;
+    padding: 6px 11px;
+    border-radius: 3px;
+    font-family: 'Fira Code', monospace;
+    font-size: 0.65rem;
+    white-space: nowrap;
+    transition: all 0.2s;
+    flex-shrink: 0;
+}
+
+.toast-action-btn:hover {
+    background: var(--primary-color);
+    color: #000;
+    border-color: var(--primary-color);
+    font-weight: 600;
+}
+
+.toast-dismiss {
+    background: none;
+    border: none;
+    color: var(--text-muted);
+    font-size: 1.1rem;
+    line-height: 1;
+    padding: 2px 4px;
+    flex-shrink: 0;
+}
+.toast-dismiss:hover { color: #fff; }
+
+/* เส้นหลอดเวลาด้านล่างของแต่ละ Pop-up (หมดหลอด = หายไป) */
+.toast-timer-track {
+    position: absolute;
+    bottom: 0;
+    left: 0;
+    width: 100%;
+    height: 3px;
+    background: rgba(255, 255, 255, 0.07);
+}
+
+.toast-timer-bar {
+    height: 100%;
+    width: 100%;
+    background: linear-gradient(90deg, var(--primary-color), var(--accent-color));
+    transform-origin: left center;
+    will-change: width;
+}
+
+/* หน้าต่าง Modal */
 .cinema-modal {
     position: fixed;
     inset: 0;
-    background: rgba(2, 3, 6, 0.88);
-    backdrop-filter: blur(16px);
+    background: rgba(2, 3, 6, 0.9);
     z-index: 100;
     display: none;
     justify-content: center;
@@ -378,71 +613,126 @@ body {
 .cinema-modal.active { display: flex; }
 
 .modal-glass {
-    background: rgba(10, 14, 24, 0.9);
-    border: 1px solid var(--primary-glow);
-    max-width: 880px;
+    background: #080b14;
+    border: 1px solid var(--primary-color);
+    max-width: 960px;
     width: 100%;
-    padding: 32px;
+    padding: 30px;
     border-radius: 6px;
-    box-shadow: 0 0 60px rgba(0, 0, 0, 0.95);
+    box-shadow: 0 20px 60px rgba(0, 0, 0, 0.95);
+    max-height: 86vh;
+    overflow-y: auto;
 }
 
-.modal-glass.narrow { max-width: 600px; }
+.modal-glass.narrow { max-width: 620px; }
 
 .modal-top {
     display: flex;
     justify-content: space-between;
     align-items: flex-start;
-    border-bottom: 1px solid var(--border-line);
+    border-bottom: 1px solid var(--border-subtle);
     padding-bottom: 14px;
-    margin-bottom: 22px;
+    margin-bottom: 20px;
 }
 
-.mono-sub { font-size: 0.65rem; color: var(--primary-glow); letter-spacing: 1.5px; }
+.mono-sub { font-size: 0.65rem; color: var(--primary-color); letter-spacing: 1.5px; }
 .modal-top h3 { font-weight: 300; letter-spacing: 2px; margin-top: 4px; }
 .close-btn { background: none; border: none; color: #fff; font-size: 1.8rem; }
 
 .node-grid {
     display: grid;
-    grid-template-columns: repeat(auto-fit, minmax(240px, 1fr));
-    gap: 16px;
+    grid-template-columns: repeat(auto-fit, minmax(210px, 1fr));
+    gap: 14px;
 }
 
 .node-item {
     background: rgba(255, 255, 255, 0.02);
-    border: 1px solid var(--border-line);
-    padding: 18px;
+    border: 1px solid var(--border-subtle);
+    padding: 16px;
     border-radius: 4px;
-    transition: 0.3s;
+    transition: 0.25s;
+    display: flex;
+    flex-direction: column;
 }
 
 .node-item:hover {
-    border-color: var(--primary-glow);
-    transform: translateY(-4px);
+    border-color: var(--primary-color);
+    transform: translateY(-3px);
 }
 
 .node-meta {
     display: flex;
     justify-content: space-between;
     font-family: 'Fira Code', monospace;
-    font-size: 0.65rem;
+    font-size: 0.62rem;
     margin-bottom: 8px;
-    color: var(--secondary-glow);
+    color: var(--secondary-color);
 }
 
-.tag-wip { color: var(--accent-warm); }
+.tag-wip { color: var(--accent-color); }
 .tag-ready { color: #34d399; }
 
-.node-item h4 { font-weight: 400; margin-bottom: 8px; }
-.node-item p { font-size: 0.82rem; color: #94a3b8; font-weight: 300; margin-bottom: 14px; line-height: 1.6; }
+.node-item h4 { font-weight: 400; margin-bottom: 8px; font-size: 1rem; }
+.node-item p { font-size: 0.8rem; color: #94a3b8; font-weight: 300; margin-bottom: 14px; line-height: 1.55; flex-grow: 1; }
 
-.tech-stack { display: flex; gap: 6px; flex-wrap: wrap; }
+.tech-stack { display: flex; gap: 6px; flex-wrap: wrap; margin-bottom: 14px; }
 .tech-stack span {
     font-family: 'Fira Code', monospace;
-    font-size: 0.62rem;
+    font-size: 0.6rem;
     background: rgba(255,255,255,0.06);
-    padding: 2px 8px;
+    padding: 2px 7px;
     border-radius: 3px;
+}
+
+.node-action-link {
+    font-size: 0.75rem;
+    color: var(--primary-color);
+    text-decoration: none;
+    display: inline-flex;
+    align-items: center;
+    gap: 6px;
+    border-top: 1px solid var(--border-subtle);
+    padding-top: 10px;
+    transition: color 0.2s;
+}
+.node-action-link:hover { color: var(--accent-color); }
+.node-action-link.yt-color { color: #fda4af; }
+.node-action-link.yt-color:hover { color: #ff0033; }
+
+/* แถบแสดงรายการ GitHub Repo สด */
+.live-repo-bar {
+    margin-top: 18px;
+    padding: 12px 16px;
+    background: rgba(255, 255, 255, 0.02);
+    border: 1px solid var(--border-subtle);
+    border-radius: 4px;
+    display: flex;
+    align-items: center;
+    gap: 12px;
+    flex-wrap: wrap;
+    font-size: 0.7rem;
+    color: var(--accent-color);
+}
+
+.live-repo-list {
+    display: flex;
+    gap: 8px;
+    flex-wrap: wrap;
+}
+
+.repo-pill {
+    background: rgba(168, 85, 247, 0.12);
+    border: 1px solid rgba(168, 85, 247, 0.35);
+    color: #e9d5ff;
+    padding: 3px 10px;
+    border-radius: 3px;
+    text-decoration: none;
+    font-size: 0.65rem;
+    transition: 0.2s;
+}
+.repo-pill:hover {
+    background: var(--gh-purple);
+    color: #fff;
 }
 
 .manifesto-content p {
@@ -453,16 +743,31 @@ body {
     font-size: 0.92rem;
 }
 
+.modal-cta-row {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    margin-top: 22px;
+    padding-top: 16px;
+    border-top: 1px solid var(--border-subtle);
+    flex-wrap: wrap;
+    gap: 12px;
+}
+
+.cta-btn-pair {
+    display: flex;
+    gap: 10px;
+    flex-wrap: wrap;
+}
+
 .sign {
-    text-align: right;
     font-family: 'Cinzel', serif;
-    color: var(--accent-warm);
-    margin-top: 20px;
+    color: var(--accent-color);
     letter-spacing: 2px;
 }
 
-@media (max-width: 850px) {
-    .hud-center, .lut-switcher { display: none; }
+@media (max-width: 900px) {
+    .hud-center-group, .philo-switcher { display: none; }
     * { cursor: auto; }
-    #cursor-core, #cursor-ring { display: none; }
+    #cursor-dot, #cursor-ring { display: none; }
 }

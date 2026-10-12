@@ -3,144 +3,202 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>PROGRAMBIO // SINGULARITY ENGINE</title>
-    <link href="https://fonts.googleapis.com/css2?family=Cinzel:wght@400;600;700&family=Fira+Code:wght@300;400;500;600&family=Prompt:wght@200;300;400;500&display=swap" rel="stylesheet">
+    <title>PROGRAMBIO // THE PHILOSOPHICAL COSMOS & ARCHIVES</title>
+    <link href="https://fonts.googleapis.com/css2?family=Cinzel:wght@400;600;700&family=Fira+Code:wght@300;400;500&family=Prompt:wght@200;300;400;500&display=swap" rel="stylesheet">
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
     <link rel="stylesheet" href="style.css">
 </head>
-<body data-lut="cyan">
+<body data-philosophy="existentialism">
 
-    <!-- เป้าเล็งเมาส์แบบ Tactical Sci-Fi (Custom Cursor) -->
-    <div id="cursor-core"></div>
+    <!-- เป้าเล็งเมาส์พร้อมมาตรวัดจำนวนดาวและ RPM -->
+    <div id="cursor-dot"></div>
     <div id="cursor-ring">
-        <span id="cursor-vel">V:0.0</span>
+        <span id="rpm-gauge"></span>
     </div>
 
-    <!-- เลเยอร์ Post-Processing (Film Grain + Vignette) -->
+    <!-- ขอบมืดภาพยนตร์ (Vignette) -->
     <div class="vignette"></div>
-    <div class="scanlines"></div>
 
-    <!-- ขอบดำภาพยนตร์ด้านบน (Telemetry HUD) -->
+    <!-- คอนเทนเนอร์สำหรับ Pop-up เรียงซ้อนกันสูงสุด 4 อัน (อันเก่าดันขึ้นบนและค่อยๆ จางลง) -->
+    <div id="toast-stack-container" class="toast-stack-container"></div>
+
+    <!-- ขอบดำภาพยนตร์ด้านบน (HUD) -->
     <header class="letterbox top">
         <div class="hud-group">
             <span class="rec-dot"></span>
-            <span class="mono-text">ENGINE: <strong>SINGULARITY v5.4</strong></span>
+            <span class="mono-text">ARCHETYPE: <strong>INFJ 5w4</strong></span>
             <span class="hud-divider">|</span>
             <span class="mono-text" id="fps-counter">FPS: 60</span>
             <span class="hud-divider">|</span>
-            <span class="mono-text" id="particle-counter">STARS: 750</span>
+            <button id="geometry-btn" class="hud-btn active" title="คลิกหรือหมุนลูกกลิ้งเมาส์เพื่อเปลี่ยนรูปทรงสนามฟิสิกส์">
+                <i class="fas fa-atom"></i> GEOMETRY: 01_GARGANTUA_ORBIT
+            </button>
         </div>
 
-        <div class="hud-center">
-            <span class="wing-icon">✦</span> PROGRAMBIO // INFJ-5w4 <span class="wing-icon">✦</span>
+        <div class="hud-center-group">
+            <a id="gh-top-link" href="https://github.com/ProgramBio" target="_blank" rel="noopener noreferrer" class="hud-center-link" title="GitHub Repositories">
+                <span class="wing-icon">✦</span> PROGRAMBIO <span class="wing-icon">✦</span>
+            </a>
         </div>
 
         <div class="hud-group">
-            <button id="audio-toggle" class="hud-btn glow-pulse">
-                <i class="fas fa-wave-square"></i> INITIALIZE AUDIO SYNTH
+            <a id="gh-hud-btn" href="https://github.com/ProgramBio?tab=repositories" target="_blank" rel="noopener noreferrer" class="hud-btn gh-hud-link">
+                <i class="fab fa-github"></i> GITHUB REPOS
+            </a>
+            <a href="https://www.youtube.com/@ProgramBio?sub_confirmation=1" target="_blank" rel="noopener noreferrer" class="hud-btn yt-hud-link">
+                <i class="fab fa-youtube"></i> YOUTUBE
+            </a>
+            <button id="audio-toggle" class="hud-btn">
+                <i class="fas fa-volume-mute"></i> AMBIENT: OFF
             </button>
             <span class="mono-text" id="timecode">03:00:00:00</span>
         </div>
     </header>
 
-    <!-- ขอบดำภาพยนตร์ด้านล่าง (DaVinci LUT Switcher & Gravity Controls) -->
+    <!-- ขอบดำภาพยนตร์ด้านล่าง (Philosophy Theme Switcher) -->
     <footer class="letterbox bottom">
         <div class="hud-group mono-text">
-            <span>COORDS: <strong id="mouse-coords">X:0000 Y:0000</strong></span>
+            <span>POS: <strong id="mouse-coords">X:0000 Y:0000</strong></span>
             <span class="hud-divider">|</span>
-            <span>GRAVITY WELL: <strong id="gravity-state">NORMAL ORBIT</strong></span>
+            <span>STATUS: <strong id="gravity-state">0 RPM [DRIFT]</strong></span>
         </div>
 
-        <!-- ระบบสลับ LUT สีแบบ DaVinci Resolve -->
-        <div class="lut-switcher mono-text">
-            <span class="lut-label"><i class="fas fa-sliders-h"></i> LUT NODE:</span>
-            <button class="lut-btn active" data-theme="cyan">01_ANAMORPHIC</button>
-            <button class="lut-btn" data-theme="amber">02_GARGANTUA</button>
-            <button class="lut-btn" data-theme="crimson">03_NIHILISM</button>
-            <button class="lut-btn" data-theme="mono">04_NOIR_RAW</button>
+        <!-- ปุ่มสลับธีมปรัชญา 4 แขนง -->
+        <div class="philo-switcher mono-text">
+            <span class="lut-label"><i class="fas fa-eye"></i> PARADIGM:</span>
+            <button class="philo-btn active" data-theme="existentialism">01_EXISTENTIALISM</button>
+            <button class="philo-btn" data-theme="nihilism">02_NIHILISM</button>
+            <button class="philo-btn" data-theme="determinism">03_DETERMINISM</button>
+            <button class="philo-btn" data-theme="absurdism">04_ABSURDISM</button>
         </div>
 
         <div class="hud-group">
-            <span class="hint-badge mono-text"><i class="fas fa-mouse"></i> คลิกซ้ายค้าง = บิดเบี้ยวอวกาศ (BLACK HOLE)</span>
+            <span class="hint-badge mono-text">เหวี่ยงดาวถล่มผลึก = ปลดล็อก Repo & ผลงาน (ซ้อนได้ 4 ชั้น)</span>
         </div>
     </footer>
 
-    <!-- พื้นหลัง Physics & Audio Visualizer Canvas -->
-    <canvas id="singularity-canvas"></canvas>
+    <!-- พื้นหลังดวงดาวและหลุมดำ 60 FPS (Canvas) -->
+    <canvas id="cosmos-canvas"></canvas>
 
-    <!-- เวทีแสดงผล 3D Perspective (ขยับเอียงตามเมาส์) -->
-    <main class="stage-3d" id="stage-3d">
-        <div class="studio-credit">
-            <span class="scramble-hover" data-value="A SOLITARY CRAFTSMAN PRODUCTION">A SOLITARY CRAFTSMAN PRODUCTION</span>
+    <!-- เนื้อหาหลักตรงกลาง -->
+    <main class="cinema-stage">
+        
+        <!-- เฉพาะส่วนหัวข้อใหญ่นี้เท่านั้นที่จะขยับตามความเร็วเมาส์ -->
+        <div id="parallax-header" class="parallax-header">
+            <div class="studio-credit">
+                <span id="paradigm-sub">CODE REPOSITORIES // VISUAL ARTS // EXISTENTIAL PHILOSOPHY</span>
+            </div>
+
+            <div class="title-block">
+                <div class="anamorphic-streak" id="flare-streak"></div>
+                <h1 class="cinematic-title scramble-init" data-value="เข้ามาส่องหรอ แต่โทษทีนะ">เข้ามาส่องหรอ แต่โทษทีนะ</h1>
+            </div>
+
+            <div class="subtitle-block">
+                <p class="thai-subtitle">กำลังก่อสร้างอยู่น่ะ... <span class="mono-tag">[BUILDING THE MASTER ARCHIVE]</span></p>
+            </div>
         </div>
 
-        <div class="title-block">
-            <div class="anamorphic-streak"></div>
-            <h1 class="cinematic-title scramble-init" data-value="เข้ามาส่องหรอ แต่โทษทีนะ">เข้ามาส่องหรอ แต่โทษทีนะ</h1>
-        </div>
-
-        <div class="subtitle-block">
-            <p class="thai-subtitle">กำลังก่อสร้างอยู่น่ะ... <span class="mono-tag">[BUILDING PERFECTION]</span></p>
-            <p class="existential-desc">
-                "คุณสามารถคลิกค้างเพื่อบิดเบี้ยวแรงโน้มถ่วงของดวงดาว หรือเปิดระบบสังเคราะห์เสียงเพื่อดูคลื่นความถี่...<br>
-                เพราะแม้แต่หน้าเว็บที่กำลังก่อสร้าง ก็ต้องมีโครงสร้างตรรกะและศิลปะที่สมบูรณ์แบบ"
+        <!-- ส่วนคำอธิบายและปุ่มกด -->
+        <div class="static-content">
+            <p class="existential-desc" id="paradigm-quote">
+                "มนุษย์ถูกสาปให้มีอิสระ และต้องเป็นผู้กำหนดความหมายของทุกสิ่งที่สร้างขึ้นด้วยตัวเอง...<br>
+                ลองปั้นหลุมดำเหวี่ยงดาวทำลายผลึกเรขาคณิตเพื่อปลดล็อกคลัง <strong>GitHub Repositories</strong>, โปรเจกต์โค้ด และผลงานของ <strong>ProgramBio</strong>"
             </p>
-        </div>
 
-        <!-- ปุ่มควบคุมโต้ตอบ -->
-        <div class="control-deck">
-            <button id="open-nodes-btn" class="cyber-cinema-btn">
-                <i class="fas fa-project-diagram"></i> สำรวจโครงสร้าง NODE (SYSTEM ARCHITECTURE)
-            </button>
-            <button id="open-philosophy-btn" class="cyber-cinema-btn secondary">
-                <i class="fas fa-terminal"></i> ถอดรหัสผู้สร้าง (THE ICONOCLAST)
-            </button>
-            <button id="supernova-btn" class="cyber-cinema-btn danger">
-                <i class="fas fa-explosion"></i> จุดระเบิด SUPERNOVA
-            </button>
-        </div>
+            <div class="control-deck">
+                <button id="open-nodes-btn" class="cyber-cinema-btn primary-highlight">
+                    <i class="fas fa-code-branch"></i> คลังผลงาน & GITHUB REPOS
+                </button>
+                <a id="gh-main-btn" href="https://github.com/ProgramBio?tab=repositories" target="_blank" rel="noopener noreferrer" class="cyber-cinema-btn gh-main-btn">
+                    <i class="fab fa-github"></i> เปิดดู GITHUB PROFILE
+                </a>
+                <a href="https://www.youtube.com/@ProgramBio" target="_blank" rel="noopener noreferrer" class="cyber-cinema-btn yt-main-btn">
+                    <i class="fab fa-youtube"></i> ช่อง YOUTUBE
+                </a>
+                <button id="open-philosophy-btn" class="cyber-cinema-btn secondary">
+                    <i class="fas fa-book-open"></i> ถอดรหัสผู้สร้าง
+                </button>
+                <button id="supernova-btn" class="cyber-cinema-btn danger">
+                    <i class="fas fa-burst"></i> SUPERNOVA
+                </button>
+            </div>
 
-        <!-- เครดิตท้ายโปสเตอร์ภาพยนตร์ -->
-        <div class="billing-credits">
-            <p>
-                <span class="role">WRITTEN, DIRECTED & ENGINEERED BY</span> <strong>PROGRAMBIO</strong>
-                <span class="role">PHYSICS & WEBGL LOGIC</span> <strong>VANILLA JS / THREE.JS / PYTHON / LUAU</strong>
-                <span class="role">VISUAL COMPOSITING</span> <strong>AFTER EFFECTS & PREMIERE PRO</strong><br>
-                <span class="role">COLOR PIPELINE</span> <strong>DAVINCI RESOLVE (.CUBE NODES)</strong>
-                <span class="role">ACOUSTIC SYNTHESIS</span> <strong>WEB AUDIO API & FL STUDIO</strong>
-                <span class="role">CORE ARCHETYPE</span> <strong>INFJ 5W4</strong>
-            </p>
+            <div class="billing-credits">
+                <p>
+                    <span class="role">ARCHITECT & DEVELOPER</span> <strong><a id="gh-credit-link" href="https://github.com/ProgramBio" target="_blank" class="credit-link">GITHUB // PROGRAMBIO</a></strong>
+                    <span class="role">SOFTWARE & ALGORITHMS</span> <strong>PYTHON / C / LUAU / JAVASCRIPT</strong>
+                    <span class="role">WEB & PHYSICS</span> <strong>HTML5 CANVAS / THREE.JS / MATTER.JS</strong><br>
+                    <span class="role">MOTION & COLOR</span> <strong>AFTER EFFECTS / PREMIERE / DAVINCI RESOLVE</strong>
+                    <span class="role">ACOUSTIC DESIGN</span> <strong>FL STUDIO & WEB AUDIO</strong>
+                    <span class="role">VIDEO ESSAYS</span> <strong><a href="https://www.youtube.com/@ProgramBio" target="_blank" class="credit-link">YOUTUBE // @PROGRAMBIO</a></strong>
+                </p>
+            </div>
         </div>
     </main>
 
-    <!-- Modal 1: โครงสร้าง Node ผลงาน -->
+    <!-- Modal 1: คลังผลงาน & GitHub Repositories (ครบทั้ง Code, Web, Game, Hardware และ Video) -->
     <div id="nodes-modal" class="cinema-modal">
         <div class="modal-glass">
             <div class="modal-top">
                 <div>
-                    <span class="mono-sub">NODE GRAPH INSPECTOR // Ni-Ti ARCHITECTURE</span>
-                    <h3>DECONSTRUCTING THE WORKS</h3>
+                    <span class="mono-sub">UNIVERSAL ARCHIVE // GITHUB REPOSITORIES & CREATIVE NODES</span>
+                    <h3>PROGRAMBIO'S SYSTEM ARCHITECTURE</h3>
                 </div>
                 <button class="close-btn">&times;</button>
             </div>
+
             <div class="node-grid">
+                <!-- Card 1: Algorithms & Core Code -->
                 <div class="node-item">
-                    <div class="node-meta"><span>NODE_01</span><span class="tag-wip">IN PRODUCTION</span></div>
-                    <h4>Existential Game Lore & Analysis</h4>
-                    <p>การผ่าโครงสร้างจิตวิทยาตัวละคร เจตจำนงเสรี และความย้อนแย้งของศีลธรรม ถ่ายทอดด้วยสคริปต์และการตัดต่อที่แม่นยำทุกเฟรม</p>
-                    <div class="tech-stack"><span>Psychology</span><span>After Effects</span><span>Audition</span></div>
+                    <div class="node-meta"><span>REPO_01 // CORE ALGORITHMS</span><span class="tag-ready">GITHUB</span></div>
+                    <h4>Python, C & Data Structures</h4>
+                    <p>คลังโค้ดอัลกอริทึม โครงสร้างข้อมูล (Singly Linked List, Sorting), ตรรกะหมากรุก (`checkmate.py`) และการจัดการหน่วยความจำระดับล่าง</p>
+                    <div class="tech-stack"><span>Python</span><span>C Language</span><span>Algorithms</span></div>
+                    <a href="https://github.com/ProgramBio?tab=repositories" target="_blank" rel="noopener noreferrer" class="node-action-link gh-link-target">
+                        <i class="fab fa-github"></i> ดู Source Code บน GitHub <i class="fas fa-arrow-right"></i>
+                    </a>
                 </div>
+
+                <!-- Card 2: Interactive Web & Physics -->
                 <div class="node-item">
-                    <div class="node-meta"><span>NODE_02</span><span class="tag-ready">ONLINE</span></div>
-                    <h4>Real-Time Combat & Parry Mechanics</h4>
-                    <p>อัลกอริทึมตรวจจับการปัดป้องระดับมิลลิวินาที ระบบพาร์ทิเคิลตอบสนอง และการเชื่อมโยงไมโครคอนโทรลเลอร์เข้ากับเกม</p>
-                    <div class="tech-stack"><span>Luau</span><span>Python / C</span><span>Hardware IoT</span></div>
+                    <div class="node-meta"><span>REPO_02 // WEB & 3D ENGINE</span><span class="tag-ready">LIVE DEMO</span></div>
+                    <h4>Interactive WebGL & Physics</h4>
+                    <p>การจำลองฟิสิกส์แรงโน้มถ่วงหลุมดำด้วย Vanilla JS Canvas, โลก 3 มิติด้วย Three.js, ฟิสิกส์ 2D Matter.js และระบบจัดการข้อมูล Local Storage</p>
+                    <div class="tech-stack"><span>JavaScript</span><span>Three.js</span><span>HTML5 / CSS3</span></div>
+                    <a href="https://github.com/ProgramBio?tab=repositories" target="_blank" rel="noopener noreferrer" class="node-action-link gh-link-target">
+                        <i class="fas fa-code"></i> สำรวจ Web Repositories <i class="fas fa-arrow-right"></i>
+                    </a>
                 </div>
+
+                <!-- Card 3: Game Dev & Hardware IoT -->
                 <div class="node-item">
-                    <div class="node-meta"><span>NODE_03</span><span class="tag-ready">ONLINE</span></div>
-                    <h4>Cinematic Color & Motion Pipeline</h4>
-                    <p>การออกแบบ VFX, Particle Transitions และการสร้างตารางสี 3D LUT (.cube) เฉพาะตัวเพื่อคุมบรรยากาศความมืดมิดที่งดงาม</p>
-                    <div class="tech-stack"><span>DaVinci Resolve</span><span>Premiere Pro</span><span>Lightroom</span></div>
+                    <div class="node-meta"><span>REPO_03 // GAME & HARDWARE</span><span class="tag-wip">PROTOTYPE</span></div>
+                    <h4>Combat Mechanics & Physical IoT</h4>
+                    <p>สคริปต์ระบบต่อสู้และคำนวณจังหวะปัดป้อง (Parry Mechanics) ด้วยภาษา Luau รวมถึงโปรเจกต์เกม Roguelike เชื่อมต่อเซนเซอร์ไมโครคอนโทรลเลอร์ผ่าน Wi-Fi</p>
+                    <div class="tech-stack"><span>Luau</span><span>Microcontroller</span><span>Game Logic</span></div>
+                    <a href="https://github.com/ProgramBio?tab=repositories" target="_blank" rel="noopener noreferrer" class="node-action-link gh-link-target">
+                        <i class="fas fa-gamepad"></i> ดูโปรเจกต์เกมและฮาร์ดแวร์ <i class="fas fa-arrow-right"></i>
+                    </a>
+                </div>
+
+                <!-- Card 4: Motion, VFX & Philosophical Essays -->
+                <div class="node-item">
+                    <div class="node-meta"><span>NODE_04 // VISUAL & LORE</span><span class="tag-ready">YOUTUBE</span></div>
+                    <h4>Existential Essays & VFX Pipeline</h4>
+                    <p>งานวิเคราะห์ปรัชญาและจิตวิทยาเกม (เช่น Undertale) ผสมผสานการทำ Motion Graphics ใน After Effects, เกรดสี DaVinci Resolve และแต่งเพลงด้วย FL Studio</p>
+                    <div class="tech-stack"><span>After Effects</span><span>DaVinci Resolve</span><span>FL Studio</span></div>
+                    <a href="https://www.youtube.com/@ProgramBio/videos" target="_blank" rel="noopener noreferrer" class="node-action-link yt-color">
+                        <i class="fab fa-youtube"></i> รับชมผลงานวิดีโอในช่อง <i class="fas fa-arrow-right"></i>
+                    </a>
+                </div>
+            </div>
+
+            <!-- แถบดึงข้อมูล Live GitHub Repositories อัตโนมัติ -->
+            <div class="live-repo-bar">
+                <span class="mono-text"><i class="fas fa-satellite-dish"></i> LIVE GITHUB FEED:</span>
+                <div id="live-repo-list" class="live-repo-list mono-text">
+                    <span>กำลังสแกนคลัง Repository จาก GitHub...</span>
                 </div>
             </div>
         </div>
@@ -151,16 +209,25 @@
         <div class="modal-glass narrow">
             <div class="modal-top">
                 <div>
-                    <span class="mono-sub">CLASSIFIED MANIFESTO // 03:00 AM THOUGHTS</span>
-                    <h3>ทำไมถึงยังก่อสร้างไม่เสร็จ?</h3>
+                    <span class="mono-sub">CLASSIFIED MANIFESTO // THE ANALYTICAL ARTIST</span>
+                    <h3>เมื่อตรรกะของโค้ด มาบรรจบกับจิตวิญญาณศิลปะ</h3>
                 </div>
                 <button class="close-btn">&times;</button>
             </div>
             <div class="manifesto-content">
-                <p>"คนส่วนใหญ่มองหาผลลัพธ์ที่รวดเร็ว แต่ผมมองหา <strong>โครงสร้างที่ไร้ที่ติ</strong>"</p>
-                <p>ในฐานะคนที่สมองซีกตรรกะและซีกศิลปะทำงานพร้อมกันตลอดเวลา ผมไม่ปล่อยงานที่ตัวเองยังรู้สึกว่า 'แค่พอใช้ได้' ออกมาเด็ดขาด ไม่ว่าจะเป็นโค้ดหนึ่งฟังก์ชัน เสียงประกอบหนึ่งตัวโน้ต หรือคีย์เฟรมเพียงเสี้ยววินาที</p>
-                <p>ระหว่างที่รอผลงานชิ้นต่อไป ลองเปิดเสียง <strong>Audio Synth</strong> ด้านบน แล้วคลิกค้างเพื่อเล่นกับฟิสิกส์แรงโน้มถ่วงของดวงดาวในหน้านี้ดูก่อนครับ... นี่แหละคือตัวอย่างเล็กๆ ของคำว่า <strong>ProgramBio</strong></p>
-                <div class="sign">— ProgramBio</div>
+                <p>"สำหรับผม เส้นแบ่งระหว่างการเขียนอัลกอริทึมที่ซับซ้อน กับการเกรดสีและร้อยเรียงปรัชญาในวิดีโอ ไม่เคยมีอยู่จริง"</p>
+                <p>ทุกโปรเจกต์ของ <strong>ProgramBio</strong> ไม่ว่าจะเป็น Repository โค้ดบน GitHub, ระบบฟิสิกส์ในหน้าเว็บนี้ หรือวิดีโอวิเคราะห์ใน YouTube ล้วนถูกสร้างขึ้นด้วยมาตรฐานเดียวกัน คือการรื้อโครงสร้างลงไปให้ถึงแก่น และไม่ยอมปล่อยงานที่ฉาบฉวยออกมาเด็ดขาด</p>
+                <div class="modal-cta-row">
+                    <div class="cta-btn-pair">
+                        <a href="https://github.com/ProgramBio?tab=repositories" target="_blank" rel="noopener noreferrer" class="cyber-cinema-btn gh-main-btn gh-link-target">
+                            <i class="fab fa-github"></i> GitHub Repos
+                        </a>
+                        <a href="https://www.youtube.com/@ProgramBio?sub_confirmation=1" target="_blank" rel="noopener noreferrer" class="cyber-cinema-btn yt-main-btn">
+                            <i class="fab fa-youtube"></i> YouTube Channel
+                        </a>
+                    </div>
+                    <div class="sign">— ProgramBio</div>
+                </div>
             </div>
         </div>
     </div>
