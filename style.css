@@ -1,0 +1,468 @@
+:root {
+    --bg-core: #020306;
+    --primary-glow: #38bdf8;
+    --secondary-glow: #818cf8;
+    --accent-warm: #fde68a;
+    --text-light: #f1f5f9;
+    --text-dim: #64748b;
+    --border-line: rgba(255, 255, 255, 0.09);
+}
+
+/* ระบบสลับสี DaVinci LUT ผ่าน Data Attribute */
+body[data-lut="cyan"] {
+    --primary-glow: #38bdf8;
+    --secondary-glow: #818cf8;
+    --accent-warm: #fde68a;
+}
+body[data-lut="amber"] {
+    --primary-glow: #f59e0b;
+    --secondary-glow: #ea580c;
+    --accent-warm: #fef3c7;
+}
+body[data-lut="crimson"] {
+    --primary-glow: #f43f5e;
+    --secondary-glow: #9333ea;
+    --accent-warm: #fecdd3;
+}
+body[data-lut="mono"] {
+    --primary-glow: #e2e8f0;
+    --secondary-glow: #94a3b8;
+    --accent-warm: #ffffff;
+    filter: contrast(1.15) grayscale(0.85);
+}
+
+* {
+    margin: 0;
+    padding: 0;
+    box-sizing: border-box;
+    user-select: none;
+    cursor: none; /* ซ่อนเมาส์ปกติเพื่อใช้ Tactical Reticle */
+}
+
+body {
+    background-color: var(--bg-core);
+    color: var(--text-light);
+    font-family: 'Prompt', sans-serif;
+    height: 100vh;
+    overflow: hidden;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    perspective: 1200px;
+    transition: filter 0.6s ease;
+}
+
+.mono-text, .mono-tag, .mono-sub {
+    font-family: 'Fira Code', monospace;
+}
+
+/* Custom Tactical Cursor */
+#cursor-core {
+    position: fixed;
+    width: 6px;
+    height: 6px;
+    background: var(--accent-warm);
+    border-radius: 50%;
+    pointer-events: none;
+    z-index: 9999;
+    transform: translate(-50%, -50%);
+    box-shadow: 0 0 10px var(--primary-glow);
+}
+
+#cursor-ring {
+    position: fixed;
+    width: 38px;
+    height: 38px;
+    border: 1px solid var(--primary-glow);
+    border-radius: 50%;
+    pointer-events: none;
+    z-index: 9998;
+    transform: translate(-50%, -50%);
+    transition: width 0.2s, height 0.2s, border-color 0.2s, background 0.2s;
+    display: flex;
+    align-items: flex-end;
+    justify-content: center;
+}
+
+#cursor-ring.active-well {
+    width: 75px;
+    height: 75px;
+    border-color: var(--accent-warm);
+    background: radial-gradient(circle, rgba(255,255,255,0.12) 0%, transparent 70%);
+}
+
+#cursor-vel {
+    font-family: 'Fira Code', monospace;
+    font-size: 0.5rem;
+    color: var(--primary-glow);
+    transform: translateY(14px);
+    opacity: 0.75;
+}
+
+/* Post-Processing Overlays */
+#singularity-canvas {
+    position: fixed;
+    inset: 0;
+    z-index: 1;
+}
+
+.vignette {
+    position: fixed;
+    inset: 0;
+    box-shadow: inset 0 0 200px rgba(0, 0, 0, 0.95);
+    pointer-events: none;
+    z-index: 2;
+}
+
+.scanlines {
+    position: fixed;
+    inset: 0;
+    background: linear-gradient(to bottom, rgba(255,255,255,0), rgba(255,255,255,0) 50%, rgba(0,0,0,0.2) 50%, rgba(0,0,0,0.2));
+    background-size: 100% 4px;
+    pointer-events: none;
+    z-index: 3;
+    opacity: 0.35;
+}
+
+/* ขอบดำโรงภาพยนตร์ (Letterbox HUD) */
+.letterbox {
+    position: fixed;
+    left: 0;
+    width: 100%;
+    height: 8vh;
+    background: rgba(1, 2, 4, 0.92);
+    backdrop-filter: blur(8px);
+    z-index: 20;
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    padding: 0 3%;
+    font-size: 0.7rem;
+    color: var(--text-dim);
+    letter-spacing: 1px;
+}
+
+.letterbox.top { top: 0; border-bottom: 1px solid var(--border-line); }
+.letterbox.bottom { bottom: 0; border-top: 1px solid var(--border-line); }
+
+.hud-group {
+    display: flex;
+    align-items: center;
+    gap: 12px;
+}
+
+.hud-group strong { color: var(--text-light); }
+.hud-divider { opacity: 0.25; }
+
+.hud-center {
+    font-family: 'Cinzel', serif;
+    letter-spacing: 5px;
+    color: var(--text-light);
+    font-size: 0.78rem;
+}
+
+.wing-icon { color: var(--primary-glow); }
+
+.rec-dot {
+    width: 7px;
+    height: 7px;
+    background: var(--primary-glow);
+    border-radius: 50%;
+    box-shadow: 0 0 10px var(--primary-glow);
+    animation: blink 2s infinite;
+}
+
+@keyframes blink { 50% { opacity: 0.2; } }
+
+/* ปุ่มบน HUD & LUT Switcher */
+.hud-btn, .lut-btn {
+    background: rgba(255, 255, 255, 0.03);
+    border: 1px solid var(--border-line);
+    color: var(--text-light);
+    padding: 4px 10px;
+    font-family: 'Fira Code', monospace;
+    font-size: 0.65rem;
+    border-radius: 3px;
+    transition: all 0.25s;
+}
+
+.hud-btn:hover, .lut-btn:hover, .lut-btn.active {
+    background: var(--primary-glow);
+    color: #000;
+    border-color: var(--primary-glow);
+    box-shadow: 0 0 15px var(--primary-glow);
+    font-weight: 600;
+}
+
+.lut-switcher {
+    display: flex;
+    align-items: center;
+    gap: 6px;
+}
+
+.hint-badge {
+    color: var(--accent-warm);
+    border: 1px dashed rgba(253, 230, 138, 0.35);
+    padding: 3px 10px;
+    border-radius: 3px;
+    font-size: 0.65rem;
+}
+
+/* 3D Stage Container */
+.stage-3d {
+    position: relative;
+    z-index: 10;
+    text-align: center;
+    max-width: 980px;
+    padding: 20px;
+    transform-style: preserve-3d;
+    transition: transform 0.1s ease-out;
+    pointer-events: none; /* ให้คลิกทะลุไปเล่นกับหลุมดำได้ ยกเว้นตรงปุ่ม */
+}
+
+.control-deck, .cyber-cinema-btn {
+    pointer-events: auto;
+}
+
+.studio-credit {
+    font-family: 'Cinzel', serif;
+    font-size: 0.78rem;
+    letter-spacing: 10px;
+    color: var(--text-dim);
+    margin-bottom: 1.2rem;
+    transform: translateZ(20px);
+}
+
+.title-block {
+    position: relative;
+    margin-bottom: 1rem;
+    transform: translateZ(50px);
+}
+
+.cinematic-title {
+    font-weight: 300;
+    font-size: clamp(2rem, 4.8vw, 3.9rem);
+    letter-spacing: 7px;
+    color: #fff;
+    text-shadow: 
+        0 0 25px rgba(255, 255, 255, 0.6),
+        0 0 60px var(--primary-glow);
+}
+
+.anamorphic-streak {
+    position: absolute;
+    top: 52%;
+    left: 50%;
+    transform: translate(-50%, -50%);
+    width: 130%;
+    height: 2px;
+    background: linear-gradient(90deg, transparent 0%, var(--primary-glow) 30%, #fff 50%, var(--secondary-glow) 70%, transparent 100%);
+    box-shadow: 0 0 30px 3px var(--primary-glow);
+    opacity: 0.75;
+}
+
+.subtitle-block {
+    transform: translateZ(35px);
+    margin-bottom: 2.2rem;
+}
+
+.thai-subtitle {
+    font-size: clamp(1.1rem, 2.2vw, 1.5rem);
+    font-weight: 200;
+    letter-spacing: 4px;
+    color: var(--accent-warm);
+    margin-bottom: 0.6rem;
+}
+
+.mono-tag {
+    font-size: 0.75rem;
+    color: var(--primary-glow);
+    letter-spacing: 2px;
+}
+
+.existential-desc {
+    font-size: 0.85rem;
+    font-weight: 300;
+    color: #94a3b8;
+    line-height: 1.7;
+    max-width: 680px;
+    margin: 0 auto;
+}
+
+/* ปุ่มกดสไตล์ Sci-Fi Cinema */
+.control-deck {
+    display: flex;
+    justify-content: center;
+    gap: 14px;
+    flex-wrap: wrap;
+    margin-bottom: 3rem;
+    transform: translateZ(45px);
+}
+
+.cyber-cinema-btn {
+    background: rgba(10, 15, 30, 0.65);
+    border: 1px solid var(--primary-glow);
+    color: #fff;
+    padding: 11px 24px;
+    font-family: 'Prompt', sans-serif;
+    font-size: 0.82rem;
+    font-weight: 300;
+    letter-spacing: 2px;
+    border-radius: 3px;
+    backdrop-filter: blur(8px);
+    transition: all 0.3s ease;
+}
+
+.cyber-cinema-btn:hover {
+    background: var(--primary-glow);
+    color: #000;
+    font-weight: 500;
+    box-shadow: 0 0 30px var(--primary-glow);
+    transform: translateY(-3px);
+}
+
+.cyber-cinema-btn.secondary {
+    border-color: var(--border-line);
+    color: #cbd5e1;
+}
+.cyber-cinema-btn.secondary:hover {
+    background: rgba(255, 255, 255, 0.12);
+    color: #fff;
+    border-color: #fff;
+    box-shadow: 0 0 20px rgba(255,255,255,0.25);
+}
+
+.cyber-cinema-btn.danger {
+    border-color: rgba(244, 63, 94, 0.5);
+    color: #fda4af;
+}
+.cyber-cinema-btn.danger:hover {
+    background: #f43f5e;
+    color: #fff;
+    box-shadow: 0 0 30px #f43f5e;
+}
+
+/* เครดิตท้ายโปสเตอร์ */
+.billing-credits {
+    font-family: 'Cinzel', serif;
+    font-size: 0.7rem;
+    color: rgba(255, 255, 255, 0.3);
+    letter-spacing: 1.8px;
+    line-height: 1.9;
+    transform: translateZ(15px);
+}
+
+.billing-credits strong {
+    color: rgba(255, 255, 255, 0.65);
+    margin-right: 10px;
+}
+
+.billing-credits .role {
+    font-size: 0.5rem;
+}
+
+/* Modals */
+.cinema-modal {
+    position: fixed;
+    inset: 0;
+    background: rgba(2, 3, 6, 0.88);
+    backdrop-filter: blur(16px);
+    z-index: 100;
+    display: none;
+    justify-content: center;
+    align-items: center;
+    padding: 20px;
+    pointer-events: auto;
+}
+
+.cinema-modal.active { display: flex; }
+
+.modal-glass {
+    background: rgba(10, 14, 24, 0.9);
+    border: 1px solid var(--primary-glow);
+    max-width: 880px;
+    width: 100%;
+    padding: 32px;
+    border-radius: 6px;
+    box-shadow: 0 0 60px rgba(0, 0, 0, 0.95);
+}
+
+.modal-glass.narrow { max-width: 600px; }
+
+.modal-top {
+    display: flex;
+    justify-content: space-between;
+    align-items: flex-start;
+    border-bottom: 1px solid var(--border-line);
+    padding-bottom: 14px;
+    margin-bottom: 22px;
+}
+
+.mono-sub { font-size: 0.65rem; color: var(--primary-glow); letter-spacing: 1.5px; }
+.modal-top h3 { font-weight: 300; letter-spacing: 2px; margin-top: 4px; }
+.close-btn { background: none; border: none; color: #fff; font-size: 1.8rem; }
+
+.node-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(240px, 1fr));
+    gap: 16px;
+}
+
+.node-item {
+    background: rgba(255, 255, 255, 0.02);
+    border: 1px solid var(--border-line);
+    padding: 18px;
+    border-radius: 4px;
+    transition: 0.3s;
+}
+
+.node-item:hover {
+    border-color: var(--primary-glow);
+    transform: translateY(-4px);
+}
+
+.node-meta {
+    display: flex;
+    justify-content: space-between;
+    font-family: 'Fira Code', monospace;
+    font-size: 0.65rem;
+    margin-bottom: 8px;
+    color: var(--secondary-glow);
+}
+
+.tag-wip { color: var(--accent-warm); }
+.tag-ready { color: #34d399; }
+
+.node-item h4 { font-weight: 400; margin-bottom: 8px; }
+.node-item p { font-size: 0.82rem; color: #94a3b8; font-weight: 300; margin-bottom: 14px; line-height: 1.6; }
+
+.tech-stack { display: flex; gap: 6px; flex-wrap: wrap; }
+.tech-stack span {
+    font-family: 'Fira Code', monospace;
+    font-size: 0.62rem;
+    background: rgba(255,255,255,0.06);
+    padding: 2px 8px;
+    border-radius: 3px;
+}
+
+.manifesto-content p {
+    font-weight: 300;
+    line-height: 1.85;
+    color: #cbd5e1;
+    margin-bottom: 14px;
+    font-size: 0.92rem;
+}
+
+.sign {
+    text-align: right;
+    font-family: 'Cinzel', serif;
+    color: var(--accent-warm);
+    margin-top: 20px;
+    letter-spacing: 2px;
+}
+
+@media (max-width: 850px) {
+    .hud-center, .lut-switcher { display: none; }
+    * { cursor: auto; }
+    #cursor-core, #cursor-ring { display: none; }
+}
